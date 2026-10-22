@@ -69,6 +69,8 @@ Other small snags:
 - A foreground build was interrupted and was re-run in the background.
 - Several agents shared the box (load average 15–55), so all timings here are pessimistic.
 
+The full step-by-step log, with every command, version and timing, is in [SETUP_LOG.md](https://github.com/nankris/partmm-vs-skinning-unseen-poses/blob/main/SETUP_LOG.md) in the repo.
+
 ## Results
 
 ![](../figures/table_results.png)
@@ -103,7 +105,20 @@ PartMM beat fitted skinning on 4 of 5 sequences:
 
 The mean is 22% better, but with five sequences that differ this much, the 95% interval runs from −2% to +45%. My bar was that the *lower end* clears 10%. It doesn't, so H1 is **inconclusive**, not proven.
 
-One secondary number points the same way. On the 20% of vertices that skinning struggles with most (the loose cloth regions), PartMM's error was 34% lower (CI 11–57%). I fixed that as descriptive in advance, so it isn't a verdict.
+![](../figures/error_over_time.png)
+*Error on every held-out frame, in time order. The gap is stable over time on samba and handstand. On swing and jumping, PartMM and skinning cross several times.*
+
+![](../figures/table_per_sequence_ci.png)
+*Per-sequence reductions with frame-level bootstrap intervals. Neighbouring frames are correlated, so these intervals are too narrow. They show how consistent each sequence is, not a verdict.*
+
+Within a sequence the picture is very consistent. PartMM beat skinning on 35 of 35 samba frames and 35 of 35 handstand frames, and lost on 21 of 30 jumping frames. The uncertainty comes from the sequences disagreeing with each other, not from noisy frames. I also ran a two-level bootstrap, resampling sequences and then frames within each sequence. It gives almost the same interval as the pre-registered one (−2.4% to +45.6%), so the verdict doesn't depend on which bootstrap you pick.
+
+Worst-case error tells a slightly less flattering story. At the 95th percentile of per-vertex error, PartMM was worse than skinning on swing (+12%) as well as on jumping (+18%). On swing the average error ties, but PartMM's worst vertices are worse. The pre-registered summary of this metric is 18% lower for PartMM, with a CI of −9% to +45%. Like the main result, that isn't conclusive.
+
+![](../figures/table_p95.png)
+*95th-percentile vertex error per sequence. This is a pre-registered secondary metric and descriptive only.*
+
+One secondary number points the same way as the main result. On the 20% of vertices that skinning struggles with most (the loose cloth regions), PartMM's error was 34% lower (CI 11–57%). I fixed that as descriptive in advance, so it isn't a verdict.
 
 ### What it looks like
 
@@ -134,6 +149,7 @@ Motion matching can only reuse motion it has seen. When the needed cloth motion 
 - **PartMM itself is fast:** 6–13 s for the whole test set of a sequence, in pure NumPy.
 - **The cost is all in building the skeleton,** above all the per-frame surface tracking.
 - **Peak RAM:** about 2.5 GB per sequence.
+- **Full timed setup log:** [SETUP_LOG.md](https://github.com/nankris/partmm-vs-skinning-unseen-poses/blob/main/SETUP_LOG.md).
 
 ## How to reproduce
 
@@ -145,9 +161,11 @@ git clone https://github.com/Net-Maker/GaussiAnimate && cd GaussiAnimate && git 
 uv venv --python 3.10 .venv && . .venv/bin/activate
 uv pip install -e '.[geometry,visualization,ssdr,dev]' pybind11
 bash scripts/install_geometry.sh
-# AMA: download the mesh archives from the project page into data/AMA/<case>/meshes/
+# AMA: download the mesh archives from the project page into <repo>/data/AMA/<case>/meshes/
+export PYTHONPATH=$PWD OMP_NUM_THREADS=4 GA_TRACK_PROCS=4
 python <repo>/scripts/eval_sequence.py T_samba run/full/T_samba   # one sequence, ~12-70 min on CPU
 python <repo>/scripts/analyze.py                                   # bootstrap + verdicts + figures
+python <repo>/scripts/frame_analysis.py                            # error-over-time, frame bootstrap, p95 table
 python <repo>/scripts/render_compare.py T_samba                    # comparison sheet + GIF
 ```
 
@@ -158,13 +176,15 @@ python <repo>/scripts/render_compare.py T_samba                    # comparison 
 
 - **5 sequences, not 10.** I cut the scope to get this out the same day, and the reduction was pre-registered as an amendment before any of the new sequences were scored. I picked the 3 added sequences for variety and cloth (all three performers, an inverted pose, both dress sequences), not for results. The 5 not run are D_march, D_squat, I_crane, I_march and I_squat. n = 5 is why the H1 interval is so wide.
 - **Not the paper's benchmark.** The garment dataset and the Gaussian-splat checkpoints aren't freely available. This is a fresh test of the core idea, not a reproduction of the 48% number.
-- **Shared pose tracker.** The inner skeleton and the test-frame joint angles come from running the pipeline on the full sequence, so tracking saw the test surfaces. All methods get the same query, so the comparison stays fair, but absolute errors are optimistic.
-- **The skinning baseline is strong.** Its weights are fitted to all training frames, unlike the heuristic weight transfer often used as a baseline. That's deliberate, and it's one reason the gap is smaller than the paper's.
+- **Shared pose tracker, with a leak.** The skeleton (joint layout) is extracted from the *whole* sequence, test frames included, and the test-frame joint angles come from tracking those test surfaces. Only the outer bones and the skinning weights are restricted to training frames. All methods get the same query, so the comparison stays fair, but absolute errors are optimistic.
+- **The skinning baseline is strong.** Its weights are fitted to all training frames, unlike the heuristic weight transfer often used as a baseline. That's deliberate, and it's likely one reason the gap is smaller than the paper's (I didn't test this).
 - **Default settings everywhere,** with no tuning per sequence.
-- **Timings come from a shared, heavily loaded box.** Expect them to be faster on a quiet machine.
+- **CPU only.** No GPU was used or needed, because the pipeline here is mesh-based and I didn't train the Gaussian-splat renderer. Timings come from a shared, heavily loaded 8-core box. Expect them to be faster on a quiet machine.
+- **Frame-level intervals are optimistic.** Neighbouring test frames are strongly correlated. The verdicts use the pre-registered sequence-level bootstrap, and the frame-level numbers are only there to show consistency within each sequence.
+- **Temporal split only.** The test poses are the end of each motion. That is a fair "unseen pose" test, but it also means some test motion, like the swing hem, has no close match in the database.
 
 ## Bottom line
 
-Partwise motion matching does what it says on the box. Letting each body part borrow motion from a different moment beats copying whole poses by a wide margin.
+Partwise motion matching did what the paper says it does. Letting each body part borrow motion from a different moment beats copying whole poses by a wide margin.
 
 Against well-fitted skinning it is *probably* better, by about a fifth on average, and clearly better on the samba dress. But on five sequences that's a lean, not a result. More sequences, or ones where the test poses stay inside what the database has seen, would settle it.

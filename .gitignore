@@ -6,3 +6,4 @@ run/**/full_extraction/
 run/dropped/
 *.log
 !build.log
+HANDOFF.md

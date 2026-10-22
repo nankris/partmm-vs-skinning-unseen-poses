@@ -10,11 +10,13 @@ This is an independent, pre-registered test of **PartMM**, the partwise motion m
 | H1: vs fitted skinning (LBS), bar ≥ 10% | 21.8% | −1.9% … 45.5% | **INCONCLUSIVE** (4/5 wins) |
 | H2: vs nearest whole-body pose | 61.3% | 38.9% … 75.5% | **PROVEN** (5/5 wins) |
 
-Sanity check: PartMM and LBS beat a static mesh on 5/5. Secondary (descriptive): dynamic-region RMSE vs LBS was 34.0% lower (11.5% … 56.6%).
+Sanity check: PartMM and LBS beat a static mesh on 5/5. Secondary (descriptive): dynamic-region RMSE vs LBS was 34.0% lower (11.5% … 56.6%), and p95 vertex error vs LBS was 18.0% lower (−8.9% … 45.0%). A two-level bootstrap over sequences and frames (descriptive) gives almost the same intervals: −2.4% … 45.6% vs LBS and 38.4% … 75.6% vs nearest pose.
 
 ![results](figures/table_results.png)
 
-Full numbers: `results/summary.json` and `run/full/<case>/metrics.json`. Error renders: `figures/compare_<case>_sheet.png` and `.gif`.
+![error over time](figures/error_over_time.png)
+
+Full numbers: `results/summary.json`, `results/frame_bootstrap.json` and `run/full/<case>/metrics.json`. Error renders: `figures/compare_<case>_sheet.png` and `.gif`.
 
 ## What's here
 | Path | What |
@@ -25,7 +27,9 @@ Full numbers: `results/summary.json` and `run/full/<case>/metrics.json`. Error r
 | `scripts/fast_tracking.py` | parallel, bit-identical replacement for the per-frame surface-IK loop (see issues-found/01) |
 | `scripts/test_fast_tracking.py` | equivalence test (max Δ = 0.0) |
 | `scripts/run_seq_one_at_a_time.sh` | the sequential runner that was used |
-| `scripts/analyze.py` | bootstrap, verdicts, figures |
+| `scripts/analyze.py` | pre-registered bootstrap, verdicts, figures |
+| `scripts/frame_analysis.py` | descriptive extras: error-over-time chart, two-level and per-sequence frame bootstrap, p95 table |
+| `SETUP_LOG.md` | step-by-step setup with versions, timings, what broke and the fixes |
 | `scripts/render_compare.py` | GT / PartMM / LBS / NN renders coloured by error |
 | `issues-found/` | what broke and how it was handled |
 | `_agent_logs/` | timestamped process log |
@@ -42,12 +46,14 @@ bash scripts/install_geometry.sh                                         # pyssd
 #   unpack to <this repo>/data/AMA/<case>/meshes/mesh_*.obj
 export PYTHONPATH=$PWD OMP_NUM_THREADS=4 GA_TRACK_PROCS=4
 python <this repo>/scripts/eval_sequence.py T_samba <this repo>/run/full/T_samba
-python <this repo>/scripts/analyze.py && python <this repo>/scripts/render_compare.py T_samba
+python <this repo>/scripts/analyze.py && python <this repo>/scripts/frame_analysis.py && python <this repo>/scripts/render_compare.py T_samba
 ```
 Measured on a shared 8-core / 16 GB box: 12–25 min per sequence with the parallel tracking (70 min sequential), and about 2.5 GB peak RAM.
 
 ## Limitations
 - n = 5 of the 10 AMA sequences. This was a user time cut, pre-registered as Amendment 1 before the new sequences were scored.
-- The pose tracker saw all frames, so tracking had access to the test surfaces. It's identical for all arms, but absolute errors are optimistic.
+- The skeleton is extracted from the whole sequence (test frames included), and the test-frame joint angles come from tracking the test surfaces. It's identical for all arms, but absolute errors are optimistic.
+- CPU only (8 cores, shared and heavily loaded). The Gaussian-splat rendering half of GaussiAnimate wasn't exercised.
+- Frame-level CIs are descriptive and too narrow (neighbouring frames are correlated). See `issues-found/04-method-limits.md`.
 - This doesn't reproduce the paper's benchmark: the VTO data and the Gaussian checkpoints aren't freely available.
 - Default configs only, no tuning.
