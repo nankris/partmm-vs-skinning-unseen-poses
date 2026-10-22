@@ -1,0 +1,62 @@
+CMake Deprecation Warning at vendor/pybind11/CMakeLists.txt:8 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+-- pybind11 v2.8.0 dev2
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/new-exp/GaussiAnimate/.native/build/pyssdr
+[ 50%] Building CXX object CMakeFiles/pyssdr.dir/pyssdr.cpp.o
+[100%] Linking CXX shared module pyssdr.cpython-310-x86_64-linux-gnu.so
+[100%] Built target pyssdr
+-- Install configuration: "Release"
+-- Installing: /workspace/new-exp/gaussianimate/.venv/lib/python3.10/site-packages/./pyssdr.cpython-310-x86_64-linux-gnu.so
+pyssdr: /workspace/new-exp/gaussianimate/.venv/lib/python3.10/site-packages/pyssdr.cpython-310-x86_64-linux-gnu.so
+-- The CXX compiler identification is GNU 14.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Targeting Unix Makefiles
+-- Using /usr/bin/c++ compiler.
+-- Found GMP: /usr/lib/x86_64-linux-gnu/libgmp.so
+-- Found MPFR: /usr/lib/x86_64-linux-gnu/libmpfr.so
+CMake Warning (dev) at /usr/lib/x86_64-linux-gnu/cmake/CGAL/CGAL_SetupBoost.cmake:20 (find_package):
+  Policy CMP0167 is not set: The FindBoost module is removed.  Run "cmake
+  --help-policy CMP0167" for policy details.  Use the cmake_policy command to
+  set the policy and suppress this warning.
+
+Call Stack (most recent call first):
+  /usr/lib/x86_64-linux-gnu/cmake/CGAL/CGAL_SetupCGALDependencies.cmake:48 (include)
+  /usr/lib/x86_64-linux-gnu/cmake/CGAL/CGALConfig.cmake:169 (include)
+  CMakeLists.txt:4 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.83.0/BoostConfig.cmake (found suitable version "1.83.0", minimum required is "1.72")
+-- Boost include dirs: /usr/include
+-- Boost libraries:    
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Using gcc version 4 or later. Adding -frounding-math
+-- Found Eigen3: /usr/include/eigen3 (found suitable version "3.4.0", minimum required is "3.2")
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/new-exp/GaussiAnimate/.native/build/curve_skeleton
+[ 50%] Building CXX object CMakeFiles/curve_skeleton.dir/main.cpp.o
+[100%] Linking CXX executable curve_skeleton
+[100%] Built target curve_skeleton
+-- Install configuration: "Release"
+-- Installing: /workspace/new-exp/GaussiAnimate/.native/bin/curve_skeleton
+curve_skeleton: /workspace/new-exp/GaussiAnimate/.native/bin/curve_skeleton
+Geometry backends are ready.
+
+real	0m53.522s
+user	0m55.520s
+sys	0m4.309s
