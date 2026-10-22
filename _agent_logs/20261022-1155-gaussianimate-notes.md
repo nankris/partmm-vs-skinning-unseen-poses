@@ -29,3 +29,8 @@
 ## 13:58–14:00 IST: scope cut to 5 sequences (user, via parent)
 - D_handstand finished 13:58:51. The old runner started D_march at the same moment, and I killed it at 13:59:24 with no metrics produced (moved to run/dropped/).
 - New queue: T_swing (started 13:59:35), then I_jumping. PREREGISTRATION Amendment 1 written before either was scored. issues-found/02.
+
+## 14:54 IST: GaussiAnimate done
+- analyze.py: H1 r1 = 21.8% [−1.9, 45.5] INCONCLUSIVE (4/5 wins); H2 r2 = 61.3% [38.9, 75.5] PROVEN (5/5); sanity 5/5.
+- Renders for all 5; tables as PNG (2800 px); setup diagram; post + Substack html/meta.
+- Secret scan CLEAN (52 files). Pushed github.com/nankris/partmm-vs-skinning-unseen-poses (public).

@@ -1,6 +1,6 @@
 # Does GaussiAnimate's motion matching beat plain skinning on poses it hasn't seen?
 
-*A CPU-only test of a SIGGRAPH Asia 2026 method on 5 public mesh sequences. Against nearest-pose retrieval, its partwise motion matching cut held-out surface error by 61%. Against a fitted skinning baseline, it was 22% better on average, but the uncertainty was too wide to call.*
+*CPU-only test on 5 public clothed-human sequences. Partwise motion matching cut held-out error 61% vs nearest-pose retrieval. Vs fitted skinning: 22% better, not conclusive.*
 
 ![](../figures/diagram_pipeline.png)
 *The test. Every method gets the same inner skeleton pose for frames it has never seen, then predicts the full clothed surface for those frames.*
