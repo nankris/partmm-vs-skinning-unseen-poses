@@ -1,4 +1,4 @@
-# I tested GaussiAnimate's "motion matching" on clothed humans it had never seen pose like this
+# Does GaussiAnimate's motion matching beat plain skinning on poses it hasn't seen?
 
 *A CPU-only test of a SIGGRAPH Asia 2026 method on 5 public mesh sequences. Against nearest-pose retrieval, its partwise motion matching cut held-out surface error by 61%. Against a fitted skinning baseline, it was 22% better on average, but the uncertainty was too wide to call.*
 
@@ -119,7 +119,6 @@ One secondary number points the same way. On the 20% of vertices that skinning s
 ![](../figures/compare_I_jumping_sheet.png)
 *I_jumping, where skinning wins. PartMM shows patchy errors on the torso and jacket, where blended part motions disagree.*
 
-![](../figures/error_colorbar.png)
 
 ### Why the dress didn't always help PartMM
 
